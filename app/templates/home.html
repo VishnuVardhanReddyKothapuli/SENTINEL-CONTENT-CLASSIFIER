@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Sentinel - A Safety Platform Gateway{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="badge">NSFW Content Classifier</div>
+        <h1>Classify &amp; Clean<br><span class="highlight">NSFW Content</span><br>Instantly</h1>
+        <p class="hero-sub">
+            Upload images or videos, paste a YouTube link — our AI analyzes and 
+            optionally blurs explicit content with 90%+ accuracy. 
+            Safe, fast, and private.
+        </p>
+        <div class="hero-actions">
+            {% if user %}
+                <a href="/classify/lab" class="btn btn-primary btn-lg">Go to Lab →</a>
+            {% else %}
+                <a href="/auth/signup" class="btn btn-primary btn-lg">Get Started Free →</a>
+                <a href="/auth/login" class="btn btn-outline btn-lg">Log In</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="result-card demo-card">
+            <div class="result-indicator safe"></div>
+            <div class="result-label safe">✓ SAFE</div>
+            <div class="result-score">Confidence: 97.4%</div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Bar -->
+<section class="stats-bar">
+    <div class="stat-item">
+        <span class="stat-number">90%+</span>
+        <span class="stat-label">Accuracy</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">3 Labels</span>
+        <span class="stat-label">Safe / Suggestive / NSFW</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">Real-time</span>
+        <span class="stat-label">Processing</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">Auto Blur</span>
+        <span class="stat-label">Frame-by-frame</span>
+    </div>
+</section>
+
+<!-- Tutorial Section -->
+<section class="tutorial" id="tutorial">
+    <div class="section-header">
+        <h2>How It Works</h2>
+        <p>Watch the quick tutorial to get up and running in minutes</p>
+    </div>
+
+    <!-- YouTube Tutorial Embed -->
+    <div class="video-wrapper">
+        <div class="video-container" id="yt-tutorial">
+            <iframe
+                id="tutorial-iframe"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                title="NSFWGuard Tutorial"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+        <div class="video-caption">
+            💡 Tip: You can also paste any YouTube URL directly in the Classifying Lab to analyze it.
+        </div>
+
+        <!-- Custom YT URL input so user can change tutorial video -->
+        <div class="yt-custom-input">
+            <input type="text" id="custom-yt-url" placeholder="Paste a YouTube link to preview it here..." />
+            <button onclick="loadYouTube()" class="btn btn-outline btn-sm">Load Video</button>
+        </div>
+    </div>
+</section>
+
+<!-- Feature Cards -->
+<section class="features">
+    <div class="feature-card">
+        <div class="feature-icon">🖼️</div>
+        <h3>Image Classifier</h3>
+        <p>Upload JPG, PNG, WebP or GIF. Get a label + confidence score in seconds.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">🎬</div>
+        <h3>Video Classifier</h3>
+        <p>Upload MP4, MOV or AVI. We sample frames intelligently to give a verdict.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">📺</div>
+        <h3>YouTube Analyzer</h3>
+        <p>Paste a YouTube URL. We download, classify (and optionally blur) it for you.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">🌀</div>
+        <h3>Auto Blur Tool</h3>
+        <p>Gaussian blur applied frame-by-frame to detected explicit regions only.</p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <h2>Ready to start classifying?</h2>
+    <p>It's free. No credit card required.</p>
+    {% if user %}
+        <a href="/classify/lab" class="btn btn-primary btn-lg">Open the Lab →</a>
+    {% else %}
+        <a href="/auth/signup" class="btn btn-primary btn-lg">Create Free Account →</a>
+    {% endif %}
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function loadYouTube() {
+    const input = document.getElementById("custom-yt-url").value.trim();
+    if (!input) return;
+
+    // extract video ID from various YouTube URL formats
+    const regex = /(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/;
+    const match = input.match(regex);
+    if (!match) {
+        alert("Couldn't find a valid YouTube video ID in that URL.");
+        return;
+    }
+    const videoId = match[1];
+    document.getElementById("tutorial-iframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+}
+</script>
+{% endblock %}

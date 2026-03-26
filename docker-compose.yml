@@ -1,0 +1,47 @@
+# ============================================================
+# NSFWGuard - Docker Compose
+# Starts the FastAPI app and a MySQL database together.
+# Usage: docker compose up --build
+# ============================================================
+
+version: "3.9"
+
+services:
+
+  # ── MySQL Database ──────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: nsfw_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: nsfw_classifier
+      MYSQL_USER: nsfw_user
+      MYSQL_PASSWORD: your_db_password_here   # match your .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql   # data survives container restarts
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Application ─────────────────────────────────────
+  app:
+    build: .
+    container_name: nsfw_app
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy   # wait for MySQL to be ready
+    env_file:
+      - .env                         # loads all your secrets from .env
+    volumes:
+      - ./app/static/uploads:/app/app/static/uploads   # persist uploaded files
+
+volumes:
+  mysql_data:
